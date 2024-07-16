@@ -95,7 +95,7 @@ server.post("/api/employees", async (req, res, next) => {
 server.put("/api/employees/:id", async (req, res, next) => {
   try {
     const { name, department_id } = req.body;
-    const SQL = `UPDATE employees SET name=$1, department_id=$2
+    const SQL = `UPDATE employees SET name=$1, department_id=$2, updated_at=now()
     WHERE id=$3 RETURNING *`;
     const response = await client.query(SQL, [
       name,
