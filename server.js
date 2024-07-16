@@ -62,36 +62,61 @@ server.use(express.json());
 server.use(require("morgan")("dev"));
 // create routes
 server.get("/api/employees", async (req, res, next) => {
-    try {
-        const SQL=`SELECT * FROM employees`;
-        const response = await client.query(SQL);
-        res.send(response.rows);
-    } catch (error) {
-        next(error)
-    }
-});
-
-server.get("/api/departments", async (req, res, next) => {
-    try {
-        const SQL=`SELECT * FROM departments`;
-        const response = await client.query(SQL);
-        res.send(response.rows);
-    } catch (error) {
-        next(error)
-    }
-});
-
-server.post("/api/employees", async (req, res, next) => {
   try {
-    const {name, department_id} = req.body;
+    const SQL = `SELECT * FROM employees ORDER BY id DESC`;
+    const response = await client.query(SQL);
+    res.send(response.rows);
   } catch (error) {
     next(error);
   }
 });
 
-server.put("/api/employees/:id", async (req, res, next) => {});
+server.get("/api/departments", async (req, res, next) => {
+  try {
+    const SQL = `SELECT * FROM departments`;
+    const response = await client.query(SQL);
+    res.send(response.rows);
+  } catch (error) {
+    next(error);
+  }
+});
 
-server.delete("/api/employees/:id", async (req, res, next) => {});
+server.post("/api/employees", async (req, res, next) => {
+  try {
+    const { name, department_id } = req.body;
+    const SQL = `INSERT INTO employees(name, department_id) VALUES($1, $2) RETURNING *`;
+    const response = await client.query(SQL, [name, department_id]);
+    res.status(201).send(response.rows[0]);
+  } catch (error) {
+    next(error);
+  }
+});
+
+server.put("/api/employees/:id", async (req, res, next) => {
+  try {
+    const { name, department_id } = req.body;
+    const SQL = `UPDATE employees SET name=$1, department_id=$2
+    WHERE id=$3 RETURNING *`;
+    const response = await client.query(SQL, [
+      name,
+      department_id,
+      req.params.id,
+    ]);
+    res.send(response.rows[0]);
+  } catch (error) {
+    next(error);
+  }
+});
+
+server.delete("/api/employees/:id", async (req, res, next) => {
+  try {
+    const SQL = `DELETE FROM employees WHERE id=$1`;
+    await client.query(SQL, [req.params.id]);
+    res.sendStatus(204);
+  } catch (error) {
+    next(error);
+  }
+});
 
 // error handling route returns object with error property
 server.use((err, req, res) => {
