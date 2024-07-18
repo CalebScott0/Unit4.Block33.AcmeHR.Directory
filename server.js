@@ -40,11 +40,11 @@ const init = async () => {
     INSERT INTO departments(name) VALUES('Human Resources');
     INSERT INTO departments(name) VALUES('Management');
 
-    INSERT INTO employees(name, department_id) VALUES('Carlitos', (SELECT id FROM department
+    INSERT INTO employees(name, department_id) VALUES('Carlitos', (SELECT id FROM departments
     WHERE name LIKE 'Man%'));
-    INSERT INTO employees(name, department_id) VALUES('Robert', (SELECT id FROM department
+    INSERT INTO employees(name, department_id) VALUES('Robert', (SELECT id FROM departments
     WHERE name LIKE 'Hum%'));
-    INSERT INTO employees(name, department_id) VALUES('Jess', (SELECT id FROM department
+    INSERT INTO employees(name, department_id) VALUES('Jess', (SELECT id FROM departments
     WHERE name LIKE 'Acc%'));
   `;
   await client.query(SQL);
